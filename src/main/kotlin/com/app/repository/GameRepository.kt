@@ -1,9 +1,9 @@
 package com.app.repository
 
-import com.app.model.Bug
+import com.app.model.Game
 import org.springframework.data.mongodb.repository.MongoRepository
 
 /**
  * @author Timofti Gabriel
  */
-interface BugRepository : MongoRepository<Bug, String>
+interface GameRepository : MongoRepository<Game, String>

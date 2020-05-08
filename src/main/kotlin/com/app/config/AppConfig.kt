@@ -10,5 +10,5 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @ConfigurationProperties(prefix = "game-rev-query")
 class AppConfig {
-    lateinit var version: String
+    var version: String = "1.0"
 }

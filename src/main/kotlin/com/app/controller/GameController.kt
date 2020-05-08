@@ -1,7 +1,8 @@
 package com.app.controller
 
-import com.app.model.BugDTO
-import com.app.service.BugService
+
+import com.app.model.Game
+import com.app.service.GameService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -12,8 +13,8 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/games")
-class BugController(
-    private val bugService: BugService
+class GameController(
+    private val gameService: GameService
 ) {
 
     /*@GetMapping
@@ -21,7 +22,7 @@ class BugController(
         bugService.retrieveBugs()
             .map { BugDTO.from(it) }*/
 
-    @GetMapping("/{id}")
+    /*@GetMapping("/{id}")
     fun getBug(
         @PathVariable id: String
     ): ResponseEntity<BugDTO> =
@@ -30,20 +31,19 @@ class BugController(
             ResponseEntity.ok(BugDTO.from(bug!!))
         } catch (e: NoSuchElementException) {
             ResponseEntity.notFound().build()
-        }
+        }*/
 
-    @PostMapping()
-    fun addBug(
-        @RequestBody bugDTO: BugDTO
-    ): ResponseEntity<BugDTO> =
+    @PostMapping("/{game_title}")
+    fun addBug( @RequestBody game: Game, @PathVariable game_title: String): ResponseEntity<Game> =
+
         try {
-            val bug = bugService.addBug(bugDTO.toBug())
-            ResponseEntity.ok(BugDTO.from(bug))
+            val game = gameService.addGame(game, game_title)
+            ResponseEntity.ok(game)
         } catch (e: IllegalArgumentException) {
             ResponseEntity.status(HttpStatus.CONFLICT).build()
         }
 
-    @PutMapping
+    /*@PutMapping
     fun updateBug(
         @RequestBody bugDTO: BugDTO
     ): ResponseEntity<BugDTO> =
@@ -52,5 +52,5 @@ class BugController(
             ResponseEntity.ok(BugDTO.from(bug))
         } catch (e: IllegalArgumentException) {
             ResponseEntity.notFound().build()
-        }
+        }*/
 }
