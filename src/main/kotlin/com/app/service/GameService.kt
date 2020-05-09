@@ -16,7 +16,7 @@ import org.litote.kmongo.*
  */
 
 @Service
-class GameService(private val gameRepository: GameRepository){
+class GameService(private val gameRepository: GameRepository) {
     private val logger = KotlinLogging.logger {}
 
     val client = KMongo.createClient()
@@ -24,7 +24,7 @@ class GameService(private val gameRepository: GameRepository){
     val collection = database.getCollection<Game>("all-games")
 
 
-    fun addGame(game: Game, title: String) : Game? {
+    fun addGame(game: Game, title: String): Game? {
         return try {
             game.title = title
             game.nr_of_reviews = 0
@@ -33,12 +33,12 @@ class GameService(private val gameRepository: GameRepository){
 
             gameRepository.save(game)
         } catch (e: NoSuchElementException) {
-            logger.error { "IN PUT $title not found" }
+            logger.error { "IN  $title not found" }
             null
         }
     }
 
-    fun addReview(review: Review, game_title: String) : Game? {
+    fun addReview(review: Review, game_title: String): Game? {
         return try {
             val updReviews = collection.findOne(Game::title eq game_title)?.nr_of_reviews?.plus(1)
 
@@ -53,7 +53,7 @@ class GameService(private val gameRepository: GameRepository){
         }
     }
 
-    fun updateReview(review: Review, game_title: String) : Review? {
+    fun updateReview(review: Review, game_title: String): Review? {
         try {
             val allReviews = collection.findOne(Game::title eq game_title)?.reviews
 
@@ -68,16 +68,14 @@ class GameService(private val gameRepository: GameRepository){
                         break
                     }
                 }
-            }
-            else{
+            } else {
                 return null
             }
 
             collection.updateOne(Game::title eq game_title, setValue(Game::reviews, allReviews))
 
             return review
-        }
-        catch (e: NoSuchElementException) {
+        } catch (e: NoSuchElementException) {
             logger.error { "IN PUT $game_title not found" }
             return null
         }
@@ -86,13 +84,13 @@ class GameService(private val gameRepository: GameRepository){
     fun showGameReviews(id: String): Game? {
         return try {
             gameRepository.findById(id).get()
-        } catch (e:NoSuchElementException) {
-            logger.error {"Game with $id not found"}
+        } catch (e: NoSuchElementException) {
+            logger.error { "Game with $id not found" }
             null
         }
     }
 
-    fun showAllGames() : List<Game>? {
+    fun showAllGames(): List<Game>? {
         try {
             var games: List<Game> = emptyList()
             games = gameRepository.findAll()
@@ -103,21 +101,23 @@ class GameService(private val gameRepository: GameRepository){
         }
     }
 
-    fun deleteGame(id: String, key: Key) : List<Game>? {
+    fun deleteGame(id: String, key: Key): List<Game>? {
         return try {
             if (key.authKey == gameRepository.findById(id).get().key.authKey) {
                 gameRepository.deleteById(id)
                 return gameRepository.findAll()
-            }
-            else
-            {
+            } else {
                 logger.error { "WRONG AUTH KEY!!!" }
                 return null
             }
-        }
-        catch (e: NoSuchElementException) {
+        } catch (e: NoSuchElementException) {
             logger.error { "YEAHH" }
             return null
         }
     }
+
+    fun deleteReview(id: String, key: Key) : Game?{
+        return gameRepository.findById(id).get()
+    }
+
 }
