@@ -33,7 +33,7 @@ class GameService(private val gameRepository: GameRepository) {
 
             gameRepository.save(game)
         } catch (e: NoSuchElementException) {
-            logger.error { "IN  $title not found" }
+            logger.error { "Error!" }
             null
         }
     }
@@ -48,7 +48,7 @@ class GameService(private val gameRepository: GameRepository) {
 
             collection.findOne(Game::title eq game_title)
         } catch (e: NoSuchElementException) {
-            logger.error { "IN PUT $game_title not found" }
+            logger.error { "Game  $game_title not found" }
             null
         }
     }
@@ -69,6 +69,7 @@ class GameService(private val gameRepository: GameRepository) {
                     }
                 }
             } else {
+                logger.error { "This game has no reviews" }
                 return null
             }
 
@@ -76,7 +77,7 @@ class GameService(private val gameRepository: GameRepository) {
 
             return review
         } catch (e: NoSuchElementException) {
-            logger.error { "IN PUT $game_title not found" }
+            logger.error { " Game $game_title not found" }
             return null
         }
     }
@@ -96,7 +97,7 @@ class GameService(private val gameRepository: GameRepository) {
             games = gameRepository.findAll()
             return games
         } catch (e: NoSuchElementException) {
-            logger.error { "YEAHH" }
+            logger.error { "Error" }
             return null
         }
     }
@@ -107,17 +108,28 @@ class GameService(private val gameRepository: GameRepository) {
                 gameRepository.deleteById(id)
                 return gameRepository.findAll()
             } else {
-                logger.error { "WRONG AUTH KEY!!!" }
+                logger.error { "WRONG AUTH KEY!" }
                 return null
             }
         } catch (e: NoSuchElementException) {
-            logger.error { "YEAHH" }
+            logger.error { "Game with id $id not found" }
             return null
         }
     }
 
-    fun deleteReview(id: String, key: Key) : Game?{
-        return gameRepository.findById(id).get()
+    fun deleteReview(id: String, review: Review) : Game?{
+        try {
+            val allReviews = collection.findOne(Game::id eq id)?.reviews
+
+            allReviews?.remove(review)
+
+            collection.updateOne(Game::id eq id, setValue(Game::reviews, allReviews))
+
+            return collection.findOne { Game::id eq id }
+        } catch (e: NoSuchElementException) {
+            logger.error { "Review ${review.review_title} not found" }
+            return null
+        }
     }
 
 }

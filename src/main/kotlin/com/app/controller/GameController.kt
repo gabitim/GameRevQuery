@@ -5,6 +5,7 @@ import com.app.model.Game
 import com.app.model.Key
 import com.app.model.Review
 import com.app.service.GameService
+import org.litote.kmongo.MongoOperator
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -60,7 +61,11 @@ class GameController(
             ResponseEntity.notFound().build()
         }
 
-    @DeleteMapping("/{id}")
+    /*@DeleteMapping("/{id}")
     fun deleteGame(@RequestBody key: Key, @PathVariable id: String) : List<Game>? =
-        gameService.deleteGame(id, key)
+        gameService.deleteGame(id, key)*/
+
+    @DeleteMapping("/{id}")
+    fun deleteReview(@RequestBody review: Review, @PathVariable id: String) : Game? =
+        gameService.deleteReview(id, review)
 }
