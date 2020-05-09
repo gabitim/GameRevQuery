@@ -11,6 +11,7 @@ import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.litote.kmongo.*
 
+
 /**
  * @author Timofti Gabriel
  */
@@ -19,7 +20,7 @@ import org.litote.kmongo.*
 class GameService(private val gameRepository: GameRepository) {
     private val logger = KotlinLogging.logger {}
 
-    val client = KMongo.createClient()
+    private final val client = KMongo.createClient()
     final val database: MongoDatabase = client.getDatabase("games")
     val collection = database.getCollection<Game>("all-games")
 
@@ -117,19 +118,22 @@ class GameService(private val gameRepository: GameRepository) {
         }
     }
 
-    fun deleteReview(id: String, review: Review) : Game?{
+    fun deleteReview(id: String, title: String) : Game?{
         try {
-            val allReviews = collection.findOne(Game::id eq id)?.reviews
+            val allReviews = gameRepository.findById(id).get().reviews
+            allReviews?.removeIf { it.review_title == title }
 
-            allReviews?.remove(review)
+            val updatedGame: Game = gameRepository.findById(id).get()
+            updatedGame.reviews = allReviews
+            updatedGame.nr_of_reviews --
+            updatedGame.popularity = Popularity.LOW
 
-            collection.updateOne(Game::id eq id, setValue(Game::reviews, allReviews))
-
-            return collection.findOne { Game::id eq id }
+            return gameRepository.save(updatedGame)
         } catch (e: NoSuchElementException) {
-            logger.error { "Review ${review.review_title} not found" }
+            logger.error { "Review ${title} not found" }
             return null
         }
     }
+
 
 }

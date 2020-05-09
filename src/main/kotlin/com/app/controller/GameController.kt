@@ -61,11 +61,11 @@ class GameController(
             ResponseEntity.notFound().build()
         }
 
-    /*@DeleteMapping("/{id}")
-    fun deleteGame(@RequestBody key: Key, @PathVariable id: String) : List<Game>? =
-        gameService.deleteGame(id, key)*/
-
     @DeleteMapping("/{id}")
-    fun deleteReview(@RequestBody review: Review, @PathVariable id: String) : Game? =
-        gameService.deleteReview(id, review)
+    fun deleteGame(@RequestBody key: Key, @PathVariable id: String) : List<Game>? =
+        gameService.deleteGame(id, key)
+
+    @DeleteMapping("/{id}/{title_review}")
+    fun deleteReview(@PathVariable id: String, @PathVariable title_review: String) : Game? =
+        gameService.deleteReview(id, title_review)
 }
