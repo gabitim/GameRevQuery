@@ -2,6 +2,8 @@ package com.app.controller
 
 
 import com.app.model.Game
+import com.app.model.Key
+import com.app.model.Review
 import com.app.service.GameService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -17,40 +19,48 @@ class GameController(
     private val gameService: GameService
 ) {
 
-    /*@GetMapping
-    fun getBugs(): List<BugDTO> =
-        bugService.retrieveBugs()
-            .map { BugDTO.from(it) }*/
+    @GetMapping
+    fun getGames(): List<Game>? =
+        gameService.showAllGames()
 
-    /*@GetMapping("/{id}")
-    fun getBug(
-        @PathVariable id: String
-    ): ResponseEntity<BugDTO> =
+    @GetMapping("/{id}")
+    fun getGame(@PathVariable id: String): ResponseEntity<Game> =
         try {
-            val bug = bugService.getBug(id)
-            ResponseEntity.ok(BugDTO.from(bug!!))
+            val game = gameService.showGameReviews(id)
+            ResponseEntity.ok(game)
         } catch (e: NoSuchElementException) {
             ResponseEntity.notFound().build()
-        }*/
+        }
 
     @PostMapping("/{game_title}")
-    fun addBug( @RequestBody game: Game, @PathVariable game_title: String): ResponseEntity<Game> =
-
+    fun addGame(@PathVariable game_title: String): ResponseEntity<Game> =
         try {
-            val game = gameService.addGame(game, game_title)
+
+            val game = gameService.addGame(Game() , game_title)
             ResponseEntity.ok(game)
         } catch (e: IllegalArgumentException) {
             ResponseEntity.status(HttpStatus.CONFLICT).build()
         }
 
-    /*@PutMapping
-    fun updateBug(
-        @RequestBody bugDTO: BugDTO
-    ): ResponseEntity<BugDTO> =
+    @PutMapping("/{game_title}")
+    fun addReview(@RequestBody review: Review, @PathVariable game_title: String) : ResponseEntity<Game> =
         try {
-            val bug = bugService.updateBug(bugDTO.toBug())
-            ResponseEntity.ok(BugDTO.from(bug))
+            val game = gameService.addReview(review, game_title)
+            ResponseEntity.ok(game)
         } catch (e: IllegalArgumentException) {
             ResponseEntity.notFound().build()
-        }*/
+        }
+
+    @PatchMapping("/{game_title}")
+    fun updateReview(@RequestBody review: Review, @PathVariable game_title: String) : ResponseEntity<Review> =
+        try {
+            val review = gameService.updateReview(review, game_title)
+            ResponseEntity.ok(review)
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.notFound().build()
+        }
+
+    @DeleteMapping("/{id}")
+    fun deleteGame(@RequestBody key: Key, @PathVariable id: String) : List<Game>? =
+        gameService.deleteGame(id, key)
 }

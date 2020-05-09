@@ -23,7 +23,10 @@ repositories {
     jcenter()
 }
 
+
+
 dependencies {
+    implementation( "org.litote.kmongo:kmongo:3.12.0")
     implementation("io.github.microutils:kotlin-logging:1.7.8")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

@@ -1,14 +1,12 @@
 package com.app.model
 
-import java.beans.ParameterDescriptor
-
 /**
  * @author Timofti Gabriel
  */
-data class Review (
-    val review_title: String,
-    val description: String,
-    val text: String,
-    val author: String,
-    val belonging_game: Game
+data class Review(
+    //val game: String,
+    var review_title: String,
+    var description: String,
+    var text: String,
+    var author: String
 )
