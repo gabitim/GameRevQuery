@@ -8,5 +8,4 @@ import org.springframework.stereotype.Repository
 /**
  * @author Timofti Gabriel
  */
-interface GameRepository : MongoRepository<Game, String> {
-}
+interface GameRepository : MongoRepository<Game, String>
