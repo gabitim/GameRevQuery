@@ -26,6 +26,9 @@ repositories {
 
 
 dependencies {
+    implementation("io.springfox:springfox-swagger2:2.9.2")
+    implementation("io.springfox:springfox-swagger-ui:2.9.2")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation( "org.litote.kmongo:kmongo:3.12.0")
     implementation("io.github.microutils:kotlin-logging:1.7.8")
     implementation("org.springframework.boot:spring-boot-starter-web")

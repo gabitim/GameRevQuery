@@ -6,6 +6,7 @@ import com.app.model.Key
 import com.app.model.Popularity
 import com.app.model.Review
 import com.app.repository.GameRepository
+import com.mongodb.client.MongoDatabase
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.litote.kmongo.*
@@ -19,44 +20,42 @@ class GameService(private val gameRepository: GameRepository){
     private val logger = KotlinLogging.logger {}
 
     val client = KMongo.createClient()
-    val database = client.getDatabase("games")
+    final val database: MongoDatabase = client.getDatabase("games")
     val collection = database.getCollection<Game>("all-games")
 
 
     fun addGame(game: Game, title: String) : Game? {
-        try {
+        return try {
             game.title = title
             game.nr_of_reviews = 0
             game.reviews = ArrayList()
             game.popularity = Popularity.NEW
 
-            return gameRepository.save(game)
-        }
-        catch (e: NoSuchElementException) {
+            gameRepository.save(game)
+        } catch (e: NoSuchElementException) {
             logger.error { "IN PUT $title not found" }
-            return null
+            null
         }
     }
 
     fun addReview(review: Review, game_title: String) : Game? {
-        try {
-            var updReviews = collection.findOne(Game::title eq game_title)?.nr_of_reviews?.plus(1)
+        return try {
+            val updReviews = collection.findOne(Game::title eq game_title)?.nr_of_reviews?.plus(1)
 
             collection.updateOne(Game::title eq game_title, addToSet(Game::reviews, review))
             collection.updateOne(Game::title eq game_title, setValue(Game::popularity, Popularity.HOT))
             collection.updateOne(Game::title eq game_title, setValue(Game::nr_of_reviews, updReviews))
 
-            return collection.findOne(Game::title eq game_title)
-        }
-        catch (e: NoSuchElementException) {
+            collection.findOne(Game::title eq game_title)
+        } catch (e: NoSuchElementException) {
             logger.error { "IN PUT $game_title not found" }
-            return null
+            null
         }
     }
 
     fun updateReview(review: Review, game_title: String) : Review? {
         try {
-            var allReviews = collection.findOne(Game::title eq game_title)?.reviews
+            val allReviews = collection.findOne(Game::title eq game_title)?.reviews
 
             if (allReviews != null) {
                 for (it in allReviews) {
